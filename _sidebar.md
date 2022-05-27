@@ -67,6 +67,7 @@
     - [Linux 软件包管理](/linux_基础/linux软件包管理.md)
     - [Linux 进程管理](/linux_基础/linux进程管理.md)
     - linux 磁盘管理
+      - [vmware基于centos磁盘扩容](/linux_基础/cipankuorong.md)
       - [linux 软硬链接](/linux_基础/linux软硬链接.md)
       - [linux 文件系统管理](/linux_基础/linux文件系统管理.md)
       - [linux 文件系统挂载](/linux_基础/文件系统挂载.md)

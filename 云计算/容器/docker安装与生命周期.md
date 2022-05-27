@@ -197,7 +197,7 @@ systemctl status containerd
 
 ## 启动第一个容器
 
-```
+```bash
 1.获取nginx镜像
 docker search nginx
 docker pull nginx

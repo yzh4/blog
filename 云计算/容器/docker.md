@@ -434,7 +434,7 @@ docker rm -f `docker ps -a |awk '{print $1}'`
 
 ​    Dockerfile 由一行行命令语句组成，并且支持已 # 开头的注释行。一般而言，Dockerfile 的内容分为四个部分：基础镜像信息、维护者信息、镜像操作指令和容器启动时执行指令。
 
-```
+```bash
 # This dockerfile uses the Ubuntu image
 # VERSION 2
 # Author: yuezenghui

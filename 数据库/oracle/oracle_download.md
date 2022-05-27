@@ -160,9 +160,19 @@ SYSDBA 或 NORMAL
 复制管理员
 ```
 
+## plsql下载
+
+> https://www.jb51.net/softs/820654.html
 
 
 
+注册码
+
+```
+产品编号Product Code: kfj6yg6rfyhqcha6cbgs6fsw3kyje7a6qr
+序列号Serial Number: 276182
+口令Password: xs374ca
+```
 
 
 

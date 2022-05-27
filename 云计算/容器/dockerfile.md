@@ -417,7 +417,7 @@ if __name__=="__main__":
 
 2.写入python文件内容，创建dockerfile
 
-```
+```bash
 [root@docker01 docker]# cat Dockerfile 
 FROM centos:7.8.2003
 RUN curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo;
