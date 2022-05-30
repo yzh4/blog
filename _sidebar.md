@@ -161,7 +161,7 @@
 
 
 - 监控
-
+  - [Prometheus](/监控/Prometheus/Prometheus_.md)
   - zabbix
     - [为何要用监控?](/监控/weiheyaojiankong.md)
     - [zabbix 介绍部署](/监控/zabbix_jieshaobushu.md)
