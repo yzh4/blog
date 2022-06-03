@@ -15,12 +15,8 @@
     - [docker 容器编排](/云计算/容器/docker容器编排.md)
     - [容器化运行django](/云计算/容器/docker_django.md)
     - [遇见 bug](/云计算/容器/一些问题.md)
-  - k8s
-    - [k8s简介](/云计算/K8S_01/1_Kubernetes简介/README.md)
-    - [搭建前置知识](/云计算/K8S_01/2_搭建K8S集群前置知识/README.md)
-    - [kubeadm搭建](/云计算/K8S_01/3_使用kubeadm方式搭建K8S集群/README.md)
-    - [二进制搭建](/云计算/K8S_01/4_使用二进制方式搭建K8S集群/README.md)
-    - [两种方式对比](/云计算/K8S_01/5_Kubeadm和二进制方式对比/README.md)
+  - k8s基础
+    - [k8s介绍与搭建](/云计算/K8S_01/1_k8s介绍与搭建/README.md)
     - [集群管理工具](/云计算/K8S_01/6_Kubernetes集群管理工具kubectl/README.md)
     - [集群yaml文件详解](/云计算/K8S_01/7_Kubernetes集群YAML文件详解/README.md)
     - [核心技术Pod](/云计算/K8S_01/8_Kubernetes核心技术Pod/README.md)

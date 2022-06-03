@@ -10,7 +10,7 @@
   - 离线
   - 实时
 
-​	不论是离线还是实时，都是在服务器上面来执行，执行的过程中对我们的服务器一些相关的指标来进行监控，为了保证公司的线上业务运行平稳运行，我们需要来关注各项业务的指标是否正常，比如说服务器、网络设备、硬件资源，数据库，包括应用程序本身。这个时候我们就需要借助第三方的监控工具Prometheus，监控的目标是当服务器的指标不符合我们的需求的时候，监控工具应该把这些数据收集起来，及时的做展现并报警通知相关的责任人，并且把异常信息记录下来。
+​	不论是离线还是实时都是在服务器上面来执行，执行的过程中对我们的服务器一些相关的指标来进行监控，为了保证公司的线上业务运行平稳运行，我们需要来关注各项业务的指标是否正常，比如说服务器、网络设备、硬件资源，数据库，包括应用程序本身。这个时候我们就需要借助第三方的监控工具Prometheus，监控的目标是当服务器的指标不符合我们的需求的时候，监控工具应该把这些数据收集起来，及时的做展现并报警通知相关的责任人，并且把异常信息记录下来。
 
 - Prometheus:监控收集
 - Grafana:展示信息
@@ -20,7 +20,7 @@
 
 ![image-20220530185306985](Prometheus_.assets/image-20220530185306985.png)
 
-## 介绍
+## Prometheus介绍
 
 ​	Prometheus 受启发于 Google 的 Brogmon 监控系统（相似的 Kubernetes 是从 Google 的 Brog 系统演变而来），从 2012 年开始由前 Google 工程师在 Soundcloud 以开源软件的 形式进行研发，并且于 2015 年早期对外发布早期版本。 
 
@@ -34,7 +34,7 @@
 
 ​	Prometheus 核心部分只有一个单独的`二进制文件`，不存在任何的第三方依赖(数据库， 缓存等等)。唯一需要的就是`本地磁盘`，因此不会有潜在级联故障的风险。
 
- 	Prometheus 基于 `Pull 模型`的架构方式，可以在任何地方（本地电脑，开发环境，测试环境）搭建我们的监控系统。 
+​	Prometheus 基于 `Pull 模型`的架构方式，可以在任何地方（本地电脑，开发环境，测试环境）搭建我们的监控系统。 
 
 ​	 对于一些复杂的情况，还可以使用 Prometheus `服务发现(Service Discovery)`的能力 动态管理监控目标。
 
@@ -184,13 +184,314 @@ Prometheus 既然设计为一个维度存储模型，可以把它理解为一个
 
 > 下载地址：https://prometheus.io/download/
 
-**安装 Prometheus Server**
+#### 1.安装 Prometheus Server
 
 ​	Prometheus 基于 Golang 编写，编译后的软件包，不依赖于任何的第三方依赖。只需下载对应平台的二进制包，解压并且添加基本的配置即可正常启动 Prometheus Server。
 
 ```perl
-1.上传安装包prometheus-2.29.1.linux-amd64.tar.gz至/usr/local/prometheus
+1.上传安装包prometheus-2.29.1.linux-amd64.tar.gz
+至/usr/local/prometheus
 
-2.解压
+2.解压,并修改目录名
+tar xf prometheus-2.29.1.linux-amd64.tar.gz -C /module/
+
+mv prometheus-2.29.1.linux-amd64/ prometheus-2.29.1
+
+3.修改配置文件 prometheus.yml
+
+- job_name: "prometheus"
+    static_configs:
+      - targets: ["10.0.0.101:9090"]
+
+  - job_name: 'pushgateway'
+    static_configs:
+      - targets: ['10.0.0.101:9091']
+        #labels:
+        #instance: pushgateway
+        
+        
+   - job_name: 'node exporter'
+     static_configs:
+     - targets: ['10.0.0.101:9100', '10.0.0.102:9100' ]
+
+```
+
+配置说明： 
+
+1、`global 配置块`：控制 Prometheus 服务器的全局配置 
+
+➢ scrape_interval：配置拉取数据的时间间隔，默认为 1 分钟。 
+
+➢ evaluation_interval：规则验证（生成 alert）的时间间隔，默认为 1 分钟。 
+
+2、`rule_files 配置块`：规则配置文件 
+
+3、`scrape_configs 配置块`：配置采集目标相关， prometheus 监视的目标。
+
+Prometheus 自身的运行信息可以通过 HTTP 访问，所以 Prometheus 可以监控自己的运行数据。 
+
+➢ job_name：监控作业的名称 
+
+➢ static_configs：表示静态目标配置，就是固定从某个 target 拉取数据 
+
+➢ targets ： 指 定 监 控 的 目 标 ， 其 实 就 是 从 哪 儿 拉 取 数 据 。 Prometheus 会 从 http://10.0.0.101:9090/metrics 上拉取数据。 
+
+Prometheus 是可以在运行时自动加载配置的。启动时需要添加：--web.enable-lifecycle
+
+#### 2.安装 Pushgateway
+
+​	Prometheus 在正常情况下是采用拉模式从产生 metric 的作业或者 exporter（比如专 门监控主机的 NodeExporter）拉取监控数据。但是我们要监控的是 Flink on YARN 作业， 想要让 Prometheus 自动发现作业的提交、结束以及自动拉取数据显然是比较困难的。 PushGateway 就是一个中转组件，通过配置 Flink on YARN 作业将 metric 推到 PushGateway，Prometheus 再从 PushGateway 拉取就可以了。
+
+```perl
+1.上传安装包pushgateway-1.4.1.linux-amd64.tar.gz
+
+2.解压并改名
+tar -xf pushgateway-1.4.1.linux-amd64.tar.gz -C /module/
+
+mv pushgateway-1.4.1.linux-amd64/ pushgateway-1.4.1
+```
+
+#### 3.安装Alertmanager(选择性安装)
+
+```perl
+1.上传 安装包alertmanager-0.23.0.linux-amd64.tar.gz
+
+2.解压并改名
+tar -xf alertmanager-0.23.0.linux-amd64.tar.gz -C /module/
+
+mv alertmanager-0.23.0.linux-amd64/ alertmanager-0.23.0
+```
+
+#### 4.安装Node Exporter
+
+​	在 Prometheus 的架构设计中，Prometheus Server 主要负责数据的收集，存储并且对外提供数据查询支持，而实际的监控样本数据的收集则是由 Exporter 完成。因此为了能够监控到某些东西，如主机的 CPU 使用率，我们需要使用到 Exporter。Prometheus 周期 性的从 Exporter 暴露的 HTTP 服务地址（通常是/metrics）拉取监控样本数据。
+
+​	Exporter 可以是一个相对开放的概念，其可以是一个独立运行的程序独立于监控目标以外，也可以是直接内置在监控目标中。只要能够向 Prometheus 提供标准格式的监控样本数据即可。
+
+​	为了能够采集到主机的运行指标如 CPU, 内存，磁盘等信息。我们可以使用 Node  Exporter。Node Exporter 同样采用 Golang 编写，并且不存在任何的第三方依赖，只需 要下载，解压即可运行。可以从 https://prometheus.io/download/ 获取最新的 node  exporter 版本的二进制包。
+
+```perl
+1..上传 安装包node_exporter-1.2.2.linux-amd64.tar.gz
+
+2.解压并改名
+tar -xf /usr/local/prometheus/node_exporter-1.2.2.linux-amd64.tar.gz -C /module/
+
+mv node_exporter-1.2.2.linux-amd64/ node_exporter-1.2.2
+
+3.启动并通过页面查看是否成功采集到了数据
+执行./node_exporter
+浏览器输入http://10.0.0.101:9100/可以看到当前 node exporter 获取到的当前主机的所有监控数据。
+
+4.节点分发
+讲解压后的目录分发到要监控的机器节点
+ /usr/local/sbin/xsync node_exporter-1.2.2
+ 
+ 4.1修改 Prometheus 配置文件 prometheus.yml
+ 
+  - job_name: 'node exporter'
+     static_configs:
+     - targets: ['10.0.0.101:9100', '10.0.0.102:9100' ]
+     
+     
+   4.2分发脚本
+   [root@prous module]# cat /usr/local/sbin/xsync 
+#!/bin/bash
+#1. 判断参数个数
+if [ $# -lt 1 ]
+then
+    echo Not Enough Arguement!
+    exit;
+fi
+
+#2. 遍历集群所有机器
+for host in 10.0.0.20
+do
+    echo ==================== $host ====================
+    #3. 遍历所有目录，挨个发送
+    for file in $@
+    do
+        #4. 判断文件是否存在
+        if [ -e $file ]
+            then
+                #5. 获取父目录
+                pdir=$(cd -P $(dirname $file); pwd)
+                #6. 获取当前文件的名称
+                fname=$(basename $file)
+                ssh $host "mkdir -p $pdir"
+                scp -r $pdir/$fname $host:$pdir
+            else
+                echo $file does not exists!
+        fi
+    done
+done
+
+
+# 修改权限
+#chmod 777 xsync
+     
+   5.设置为开机自启动
+cat /usr/lib/systemd/system/node_exporter.service
+
+[Unit]
+Description=node_export
+Documentation=https://github.com/prometheus/node_exporter
+After=network.target
+
+[Service]
+Type=simple
+User=atguigu
+ExecStart= /opt/module/node_exporter-1.2.2/node_exporter
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+5.1分发文件
+/usr/local/sbin/xsync  /usr/lib/systemd/system/node_exporter.service
+
+5.2开机自启
+systemctl enable node_exporter.service 
+systemctl start node_exporter.service
+
+```
+
+## 启动prometheus
+
+```perl
+1.prometheus server目录下执行
+
+nohup ./prometheus --config.file=prometheus.yml > ./prometheus.log 2>&1 &
+
+2.node exporter监控主机下执行
+nohup ./node_exporter >./exporter.log 2>&1 &
+
+
+3.启动pushgateway
+nohup ./pushgateway  --web.listen-address :9091 > ./pushgateway.log 2>&1 &
+
+4.启动alertmanager
+
+nohup ./alertmanager --config.file=alertmanager.yml > ./alertmanager.log 2>&1 &
+```
+
+启动脚本
+
+```perl
+1.prometheus server
+
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+Group=root
+Type=simple
+ExecStart=/module/prometheus/prometheus \
+    --config.file /module/prometheus/prometheus.yml
+
+
+[Install]
+WantedBy=multi-user.target
+
+2.node_exporter
+
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=root
+Group=root
+Type=simple
+ExecStart=module/prometheus/node_exporter
+[Install]
+WantedBy=multi-user.target
+```
+
+## 网页查看
+
+![image-20220602123128080](Prometheus_.assets/image-20220602123128080.png)
+
+## PromQL 介绍
+
+​	Prometheus 通过指标名称（metrics name）以及对应的一组标签（labelset）唯一 定义一条时间序列。指标名称反映了监控样本的基本标识，而 label 则在这个基本特征上为 采集到的数据提供了多种特征维度。用户可以基于这些特征维度`过滤，聚合，统计`从而产生 新的计算后的一条时间序列。PromQL 是 Prometheus **内置的数据查询语言**，其提供对时 间序列数据丰富的查询，聚合以及逻辑运算能力的支持。
+
+​	并且被广泛应用在 Prometheus 的日常应用当中，包括对数据查询、可视化、告警处理当中。可以这么说，PromQL 是 Prometheus 所有应用场景的基础，理解和掌握 PromQL 是 Prometheus 入门的第一课。
+
+#### 1.基本查询
+
+​	当 Prometheus 通过 Exporter 采集到相应的监控指标样本数据后，我们就可以通过 PromQL 对监控样本数据进行查询。
+
+当我们直接使用监控指标名称查询时，可以查询该指标下的所有时间序列。如：
+
+```
+prometheus_http_requests_total
+```
+
+等同于:
+
+```
+prometheus_http_requests_total{}
+```
+
+该表达式会返回指标名称为 prometheus_http_requests_total 的所有时间序列
+
+```
+
+prometheus_http_requests_total{code="200", handler="/-/ready", instance="10.0.0.101:9090", job="prometheus"}
+53
+prometheus_http_requests_total{code="200", handler="/alerts", instance="10.0.0.101:9090", job="prometheus"}
+8
+```
+
+​	PromQL 还支持用户根据时间序列的标签匹配模式来对时间序列进行过滤，目前主要 支持两种匹配模式：完全匹配和正则匹配。
+
+**PromQL 支持使用 = 和 != 两种完全匹配模式：**
+
+- 通过使用 label=value 可以选择那些标签满足表达式定义的时间序列；
+
+- 反之使用 label!=value 则可以根据标签匹配排除时间序列；
+
+​	例如，如果我们只需要查询所有 prometheus_http_requests_total 时间序列中满足标 签 instance 为 10.0.0.101:9090 的时间 序列，则可以使用如下表达式：
+
+```
+prometheus_http_requests_total{instance="10.0.0.101:9090"}
+```
+
+​	反之使用 instance!="localhost:9090" 则可以排除这些时间序列：
+
+```
+prometheus_http_requests_total{instance!="10.0.0.101:9090"}
+```
+
+**PromQL还可以支持使用正则表达式作为匹配条件，多个表达式之间使用 | 进行分离：**
+
+- 使用 label=~regx 表示选择那些标签符合正则表达式定义的时间序列；
+- 反之使用 label!~regx 进行排除；
+
+例如，如果想查询多个环节下的时间序列序列可以使用如下表达式：
+
+```
+prometheus_http_requests_total{environment=~"staging|testing|development",method!="GET"}
+```
+
+排除用法:
+
+```
+prometheus_http_requests_total{environment!~"staging|testing|development",method!="GET"}
+```
+
+#### 2.范围查询
+
+​	直接通过类似于 PromQL 表达式 httprequeststotal 查询时间序列时，返回值中只会 包含该时间序列中的最新的一个样本值，这样的返回结果我们称之为瞬时向量。而相应的这 样的表达式称之为__**瞬时向量表达式**。
+
+​	而如果我们想过去一段时间范围内的样本数据时，我们则需要使用**区间向量表达式**。区 间向量表达式和瞬时向量表达式之间的差异在于在区间向量表达式中我们需要定义时间选 择的范围，时间范围通过**时间范围选择器 []** 进行定义。 例如，通过以下表达式可以选择
+
+最近 5 分钟内的所有样本数据：
+
+```
+prometheus_http_requests_total{}[5m]
 ```
 
