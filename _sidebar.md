@@ -39,17 +39,9 @@
 
 
 - 自动化部署
-  - Ansible
-    <!-- - ansible_old
-      - [介绍](/zidonghuayunwei/Ansible/jieshao.md)
-      - [常用模块](/zidonghuayunwei/Ansible/ansible_mokuai.md)
-      - [playbook](/zidonghuayunwei/Ansible/playbookjieshao.md)
-    - ansible_new -->
-      - [总结](/zidonghuayunwei/Ansible/ansible_zongjie.md)
-  - jumpServer
-      - [介绍与部署](/zidonghuayunwei/jumperserver/jumperserver.md)
-  - Cobbler
-      - [介绍与部署](/zidonghuayunwei/zidongzhuangji/Cobbler.md)
+  - [Ansible](/zidonghuayunwei/Ansible/ansible_zongjie.md)
+  - [jumpServer](/zidonghuayunwei/jumperserver/jumperserver.md)
+  - [Cobbler](/zidonghuayunwei/zidongzhuangji/Cobbler.md)
 
 
 - Linux基础 
