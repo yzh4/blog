@@ -128,8 +128,6 @@ http_request_status：指标名称(Metrics Name)
 
 Prometheus 既然设计为一个维度存储模型，可以把它理解为一个 [联机分析处理（OLAP)](https://www.jianshu.com/p/83cd370536dd)系统。
 
-
-
 1、存储计算层 
 
 ➢ Prometheus Server，里面包含了存储引擎和计算引擎。 
@@ -142,8 +140,6 @@ Prometheus 既然设计为一个维度存储模型，可以把它理解为一个
 
 ➢ HTTP server，对外提供 HTTP 服务。
 
-
-
 2、采集层 
 
 采集层分为两类，一类是生命周期较短的作业，还有一类是生命周期较长的作业。 
@@ -152,13 +148,11 @@ Prometheus 既然设计为一个维度存储模型，可以把它理解为一个
 
 ➢ 长作业：Retrieval 组件直接从 Job 或者 Exporter 拉取数据。
 
-
-
 3、应用层
 
 应用层主要分为两种，一种是 AlertManager，另一种是数据可视化。
 
-➢ AlertManager 对接 Pagerduty，是一套付费的监控报警系统。可实现短信报警、5 分钟无人 ack 
+➢  AlertManager 对接 Pagerduty，是一套付费的监控报警系统。可实现短信报警、5 分钟无人 ack 
 
 ​	打电话通知、仍然无人 ack，通知值班人员 Manager... 
 
@@ -168,9 +162,7 @@ Prometheus 既然设计为一个维度存储模型，可以把它理解为一个
 
 ​	`睿象云`
 
-
-
-➢ 数据可视化 
+➢  数据可视化 
 
 ​	Prometheus build-in WebUI 
 
@@ -242,7 +234,7 @@ Prometheus 是可以在运行时自动加载配置的。启动时需要添加：
 
 ​	Prometheus 在正常情况下是采用拉模式从产生 metric 的作业或者 exporter（比如专 门监控主机的 NodeExporter）拉取监控数据。但是我们要监控的是 Flink on YARN 作业， 想要让 Prometheus 自动发现作业的提交、结束以及自动拉取数据显然是比较困难的。 PushGateway 就是一个中转组件，通过配置 Flink on YARN 作业将 metric 推到 PushGateway，Prometheus 再从 PushGateway 拉取就可以了。
 
-```perl
+```shell
 1.上传安装包pushgateway-1.4.1.linux-amd64.tar.gz
 
 2.解压并改名
@@ -253,7 +245,7 @@ mv pushgateway-1.4.1.linux-amd64/ pushgateway-1.4.1
 
 #### 3.安装Alertmanager(选择性安装)
 
-```perl
+```shell
 1.上传 安装包alertmanager-0.23.0.linux-amd64.tar.gz
 
 2.解压并改名
@@ -268,7 +260,9 @@ mv alertmanager-0.23.0.linux-amd64/ alertmanager-0.23.0
 
 ​	Exporter 可以是一个相对开放的概念，其可以是一个独立运行的程序独立于监控目标以外，也可以是直接内置在监控目标中。只要能够向 Prometheus 提供标准格式的监控样本数据即可。
 
-​	为了能够采集到主机的运行指标如 CPU, 内存，磁盘等信息。我们可以使用 Node  Exporter。Node Exporter 同样采用 Golang 编写，并且不存在任何的第三方依赖，只需 要下载，解压即可运行。可以从 https://prometheus.io/download/ 获取最新的 node  exporter 版本的二进制包。
+​	为了能够采集到主机的运行指标如 CPU, 内存，磁盘等信息。我们可以使用 Node  Exporter。Node Exporter 同样采用 Golang 编写，并且不存在任何的第三方依赖，只需 要下载，解压即可运行。
+
+​	可以从 https://prometheus.io/download/ 获取最新的 node  exporter 版本的二进制包。
 
 ```perl
 1..上传 安装包node_exporter-1.2.2.linux-amd64.tar.gz
@@ -439,7 +433,6 @@ prometheus_http_requests_total{}
 该表达式会返回指标名称为 prometheus_http_requests_total 的所有时间序列
 
 ```
-
 prometheus_http_requests_total{code="200", handler="/-/ready", instance="10.0.0.101:9090", job="prometheus"}
 53
 prometheus_http_requests_total{code="200", handler="/alerts", instance="10.0.0.101:9090", job="prometheus"}
@@ -495,3 +488,290 @@ prometheus_http_requests_total{environment!~"staging|testing|development",method
 prometheus_http_requests_total{}[5m]
 ```
 
+该表达式将会返回查询到的时间序列中最近 5 分钟的所有样本数据：
+
+```
+
+prometheus_http_requests_total{code="200", handler="/-/ready", instance="10.0.0.101:9090", job="prometheus"}
+56 @1654335199.426
+prometheus_http_requests_total{code="200", handler="/alerts", instance="10.0.0.101:9090", job="prometheus"}
+8 @1654335199.426
+prometheus_http_requests_total{code="200", handler="/api/v1/label/:name/values", instance="10.0.0.101:9090", job="prometheus"}
+16 @1654335199.426
+```
+
+通过区间向量表达式查询到的结果我们称为区间向量。 除了使用 m 表示分钟以外， PromQL 的时间范围选择器支持其它时间单位：
+
+- s - 秒
+
+- m - 分钟 
+
+- h - 小时 
+
+- d - 天  
+
+- w - 周  
+
+- y - 年
+
+#### 3.时间位移操作
+
+​	在瞬时向量表达式或者区间向量表达式中，都是以当前时间为基准：
+
+​	prometheus_http_requests_total{} # 瞬时向量表达式，选择当前最新的数据
+
+​	prometheus_http_requests_total{}[5m] # 区间向量表达式，选择以当前时间为基准， 5 分钟内的数据
+
+​	而如果我们想查询，5 分钟前的瞬时样本数据，或昨天一天的区间内的样本数据呢? 这 个时候我们就可以使用位移操作，位移操作的关键字为 `offset`。 可以使用 offset 时间位移 操作：
+
+```
+prometheus_http_requests_total{} offset 5m
+prometheus_http_requests_total{}[1d] offset 1d
+```
+
+#### 4.使用聚合操作
+
+​	一般来说，如果描述样本特征的标签(label)在并非唯一的情况下，通过 PromQL 查询 数据，会返回多条满足这些特征维度的时间序列。而 PromQL 提供的聚合操作可以用来对 这些时间序列进行处理，形成一条新的时间序列：
+
+```perl
+查询系统所有 http 请求的总量
+sum(prometheus_http_requests_total)
+
+按照 mode 计算主机 CPU 的平均使用时间
+avg(node_cpu_seconds_total) by (mode)
+
+按照主机查询各个主机的 CPU 使用率
+sum(sum(irate(node_cpu_seconds_total{mode!='idle'}[5m])) / sum(irate(node_cpu_seconds_total [5m]))) by (instance) 
+```
+
+#### 5 标量和字符串
+
+​	除了使用瞬时向量表达式和区间向量表达式以外，PromQL 还直接支持用户使用标量 (Scalar)和字符串(String)。
+
+​	**标量（Scalar）：一个浮点型的数字值**
+
+​	标量只有一个数字，没有时序。 例如：
+
+```
+10
+```
+
+​	需要注意的是，当使用表达式 count(prometheus_http_requests_total)，返回的数 据类型，依然是瞬时向量。用户可以通过内置函数 scalar()将单个瞬时向量转换为标量。
+
+​	**字符串（String）：一个简单的字符串值**
+
+直接使用字符串，作为 PromQL 表达式，则会直接返回字符串。
+
+```
+"this is a string" 
+```
+
+#### 6.合法的 PromQL 表达式
+
+​	所有的 PromQL 表达式都`必须至少包含一个指标名称`(例如 http_request_total)，或者 一个`不会匹配到空字符串`的标签过滤器(例如{code=”200”})。
+
+​	因此以下两种方式，均为合法的表达式：
+
+```perl
+prometheus_http_requests_total # 合法
+prometheus_http_requests_total{} # 合法
+{method="get"} # 合法
+```
+
+​	而如下表达式，则不合法：
+
+```perl
+{job=~".*"} # 不合法
+```
+
+​	同时，除了使用 {label=value} 的形式以外，我们还可以使用内置的 __name__ 标签 来指定监控指标名称：
+
+```perl
+{__name__=~"prometheus_http_requests_total"} # 合法
+{__name__=~"node_disk_bytes_read|node_disk_bytes_written"} # 合法
+```
+
+## PromQL 操作符
+
+​	使用 PromQL 除了能够方便的按照查询和过滤时间序列以外，PromQL 还支持丰富的 操作符，用户可以使用这些操作符对进一步的对事件序列进行二次加工。这些操作符包括： 数学运算符，逻辑运算符，布尔运算符等等。
+
+#### 1.数学运算
+
+​	PromQL 支持的所有数学运算符如下所示：
+
+- +(加法)  
+
+- -(减法)  
+
+* *(乘法) 
+* / (除法) 
+* % (求余) 
+* ^ (幂运算)
+
+#### 2.布尔运算
+
+​	Prometheus 支持以下布尔运算符如下：
+
+- == (相等)  
+-  != (不相等)  
+- `>`(大于)  
+-  < (小于)  
+- `>=` (大于等于)  
+- <= (小于等于)
+
+**使用 bool 修饰符改变布尔运算符的行为**
+
+​	布尔运算符的默认行为是对时序数据进行过滤。而在其它的情况下我们可能需要的是真 正的布尔结果。例如，只需要 知道当前模块的 HTTP 请求量是否>=1000，如果大于等于 1000 则返回 1（true）否则返回 0（false）。这时可以使 用 bool 修饰符改变布尔运算的 默认行为。 例如：
+
+```
+prometheus_http_requests_total > bool 1000 
+```
+
+​	使用 bool 修改符后，布尔运算不会对时间序列进行过滤，而是直接依次瞬时向量中的 各个样本数据与标量的比较结果 0 或者 1。从而形成一条新的时间序列。
+
+```
+prometheus_http_requests_total{code="200",handler="query",instance="localhost:9090",jo
+b="prometheus",method="get"} 1 
+prometheus_http_requests_total{code="200",handler="query_range",instance="localhost:90
+90",job="prometheus",method="get"} 0 
+```
+
+​	同时需要注意的是，如果是在两个标量之间使用布尔运算，则必须使用 bool 修饰符
+
+```
+2 == bool 2 # 结果为 1
+```
+
+#### 3.使用集合运算符
+
+​	使用瞬时向量表达式能够获取到一个包含多个时间序列的集合，我们称为瞬时向量。通 过集合运算，可以在两个瞬时向量与瞬时向量之间进行相应的集合操作。
+
+​	目前，Prometheus 支持以下集合运算符：
+
+- and (并且)
+- or (或者) 
+- unless (排除)
+
+​	vector1 and vector2 会产生一个由 vector1 的元素组成的新的向量。该向量包含 vector1 中完全匹配 vector2 中的元素组成。
+
+​	vector1 or vector2 会产生一个新的向量，该向量包含 vector1 中所有的样本数据， 以及 vector2 中没有与 vector1 匹配到的样本数据。
+
+​	vector1 unless vector2 会产生一个新的向量，新向量中的元素由 vector1 中没有与 vector2 匹配的元素组成。
+
+#### 4.操作符优先级
+
+​	对于复杂类型的表达式，需要了解运算操作的运行优先级。例如，查询主机的 CPU 使 用率，可以使用表达式：
+
+```
+100 * (1 - avg (irate(node_cpu_seconds_total{mode='idle'}[5m])) by(job) ) 
+```
+
+​	在 PromQL 操作符中优先级由高到低依次为：
+
+- ^   
+- *, /, % 
+- +, -
+- ==, !=, <=, =, > 
+- and, unless 
+- or
+
+#### 5 PromQL 聚合操作
+
+​	Prometheus 还提供了下列内置的聚合操作符，这些操作符作用域瞬时向量。可以将瞬 时表达式返回的样本数据进行 聚合，形成一个新的时间序列。
+
+- sum (求和) 
+- min (最小值) 
+- max (最大值) 
+- avg (平均值)
+- stddev (标准差) 
+- stdvar (标准差异) 
+- count (计数) 
+- count_values (对 value 进行计数) 
+- bottomk (后 n 条时序) 
+- topk (前 n 条时序) 
+- quantile (分布统计) 
+
+使用聚合操作的语法如下：
+
+```
+<aggr-op>([parameter,] <vector expression>) [without|by (<label list>)] 
+```
+
+​	其中只有 count_values , quantile , topk , bottomk 支持参数(parameter)。
+
+​	`without` 用于从计算结果中移除列举的标签，而保留其它标签。`by` 则正好相反，结果向量中只保留列出的标签，其余标签则移除。通过 without 和 by 可以按照样本的问题对数据进行聚合。例如： 
+
+```
+sum(prometheus_http_requests_total) without (instance)  
+```
+
+等价于 
+
+```
+sum(prometheus_http_requests_total) by (code,handler,job,method)
+```
+
+​	如果只需要计算整个应用的 HTTP 请求总量，可以直接使用表达式：
+
+```
+ sum(prometheus_http_requests_total) 
+```
+
+​	count_values 用于时间序列中每一个样本值出现的次数。count_values 会为每一个唯一的 样本值输出一个时间序列，并且每一个时间序列包含一个额外的标签。 例如：
+
+```
+count_values("count", prometheus_http_requests_total) 
+```
+
+​	topk 和 bottomk 则用于对样本值进行排序，返回当前样本值前 n 位，或者后 n 位的 时间序列。
+
+获取 HTTP 请求数前 5 位的时序样本数据，可以使用表达式：
+
+```
+topk(5, prometheus_http_requests_total)
+```
+
+​	quantile 用于计算当前样本数据值的分布情况 quantile(φ, express)其中 0 ≤ φ ≤ 1。 例如，当 φ 为 0.5 时，即表示找到当前样本数据中的中位数：
+
+```
+quantile(0.5, prometheus_http_requests_total)
+```
+
+## Prometheus 和 Grafana 集成
+
+​	grafana 是一款采用 Go 语言编写的开源应用，主要用于大规模指标数据的可视化展现， 是网络架构和应用分析中最流行的时序数据展示工具，目前已经支持绝大部分常用的时序数 据库。下载地址：https://grafana.com/grafana/download
+
+```
+1 上传并解压
+tar -xf grafana-enterprise-8.1.2.linux-amd64.tar.gz -C /module/
+
+
+2.启动grafana
+nohup ./bin/grafana-server web > ./grafana.log 2>&1 &
+
+
+3.浏览器访问本机ip地址
+10.0.0.101:3000
+```
+
+看到grafana登录页面
+
+![image-20220605032700413](Prometheus_.assets/image-20220605032700413.png)
+
+```
+默认账号和密码
+admin
+admin
+```
+
+### 添加数据源
+
+![image-20220605032945170](Prometheus_.assets/image-20220605032945170.png)
+
+![image-20220605033104660](Prometheus_.assets/image-20220605033104660.png)
+
+![image-20220605033245784](Prometheus_.assets/image-20220605033245784.png)
+
+![image-20220605033326368](Prometheus_.assets/image-20220605033326368.png)
+
+![image-20220605033428497](Prometheus_.assets/image-20220605033428497.png)
