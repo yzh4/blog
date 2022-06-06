@@ -1043,3 +1043,4 @@ systemctl restart prometheus.service
 
 ![image-20220606205537506](Prometheus_.assets/image-20220606205537506.png)
 
+然后查看邮箱是否接收到了信息..
