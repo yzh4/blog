@@ -1,4 +1,4 @@
-# Prometheus+Grafana+睿象云(监控告警系统)
+# Prometheus(监控告警系统)
 
 ## 背景
 
@@ -252,6 +252,11 @@ mv pushgateway-1.4.1.linux-amd64/ pushgateway-1.4.1
 tar -xf alertmanager-0.23.0.linux-amd64.tar.gz -C /module/
 
 mv alertmanager-0.23.0.linux-amd64/ alertmanager-0.23.0
+
+3.启动alertmanager
+
+nohup ./alertmanager --config.file=alertmanager.yml > ./alertmanager.log 2>&1 &
+
 ```
 
 #### 4.安装Node Exporter
@@ -399,7 +404,19 @@ After=network-online.target
 User=root
 Group=root
 Type=simple
-ExecStart=module/prometheus/node_exporter
+ExecStart=/module/prometheus/node_exporter
+[Install]
+WantedBy=multi-user.target
+
+
+cat /usr/lib/systemd/system/alertmanager.service
+
+[Unit]
+Description=alertmanager System
+Documentation=alertmanager System
+[Service]
+ExecStart=/module/alertmanager-0.23.0/alertmanager \
+--config.file=alertmanager.yml
 [Install]
 WantedBy=multi-user.target
 ```
@@ -775,3 +792,254 @@ admin
 ![image-20220605033326368](Prometheus_.assets/image-20220605033326368.png)
 
 ![image-20220605033428497](Prometheus_.assets/image-20220605033428497.png)
+
+### 手动创建仪表盘 Dashboard
+
+![image-20220605113928759](Prometheus_.assets/image-20220605113928759.png)
+
+![image-20220605114114638](Prometheus_.assets/image-20220605114114638.png)
+
+```
+获取http总数
+sum(prometheus_http_requests_total)
+```
+
+![image-20220605114913177](Prometheus_.assets/image-20220605114913177.png)
+
+添加多个指标
+
+![image-20220605115954820](Prometheus_.assets/image-20220605115954820.png)
+
+保存仪表盘
+
+![image-20220605120447509](Prometheus_.assets/image-20220605120447509.png)
+
+可以创建新的监控项
+
+![image-20220605143337182](Prometheus_.assets/image-20220605143337182.png)
+
+## Prometheus 监控Docker服务器
+
+cAdvisor（Container Advisor）用于收集正在运行的容器资源使用和性能信息。
+
+1.被监控端安装完docker后，添加启动cadvisor容器
+
+```perl
+docker run \
+  --volume=/:/rootfs:ro \
+  --volume=/var/run:/var/run:ro \
+  --volume=/sys:/sys:ro \
+  --volume=/var/lib/docker/:/var/lib/docker:ro \
+  --volume=/dev/disk/:/dev/disk:ro \
+  --publish=8080:8080 \
+  --detach=true \
+  --name=cadvisor \
+  google/cadvisor:latest
+```
+
+![image-20220605224912790](Prometheus_.assets/image-20220605224912790.png)
+
+2、修改Promethus监控端配置文件：vim prometheus.yml
+
+```perl
+
+  - job_name: 'docker'
+    static_configs:
+    - targets: ['10.0.0.20:8080']
+```
+
+3.重启promethus服务
+
+```
+systemctl restart promethus
+```
+
+4、访问被监控端cAdvisor捕获的数据 ：http://10.0.0.20:8080/metrics
+
+![image-20220605231240942](Prometheus_.assets/image-20220605231240942.png)
+
+5.prometheus监控项查看是否介入
+
+![image-20220605231449734](Prometheus_.assets/image-20220605231449734.png)
+
+6、Prometheus监控端查docker数据
+
+```
+container_cpu_load_average_10s
+```
+
+![image-20220605231644194](Prometheus_.assets/image-20220605231644194.png)
+
+7、Granfana 导入 Docker 监控图表
+
+```
+https://grafana.com/dashboards/193
+```
+
+![image-20220605232005396](Prometheus_.assets/image-20220605232005396.png)
+
+8.导入后我们就可以查看到仪表盘了
+
+![image-20220605232055221](Prometheus_.assets/image-20220605232055221.png)
+
+## 集成第三方告警平台睿象云
+
+​	邮件通知常会出现接收不及时的问题，为确L保通知信息被及时接收，可通过配置 Prometheus 或者 Grafana 与第三方平台告警平台（例如睿象云）集成，进而通过第三方 平台提供的多种告警媒介（例如电话，短信）等发送告警信息。
+
+> 官网：https://www.aiops.com/
+
+注册结束后的页面，点击智能告警平台
+
+![image-20220606012132733](Prometheus_.assets/image-20220606012132733.png)
+
+点击集成
+
+![image-20220606012839225](Prometheus_.assets/image-20220606012839225.png)
+
+选择grafana
+
+![image-20220606013031972](Prometheus_.assets/image-20220606013031972.png)
+
+填写昵称保存key
+
+![image-20220606014051985](Prometheus_.assets/image-20220606014051985.png)
+
+得到key后配置granfana,在 Grafana 中创建 Notification channel
+
+![image-20220606014626911](Prometheus_.assets/image-20220606014626911.png)
+
+完成后测试会接到邮件
+
+设置分派策略
+
+![image-20220606094002839](Prometheus_.assets/image-20220606094002839.png)
+
+## alertmanager告警配置
+
+进入网页查看：http://10.0.0.101:9093/#/alerts
+
+![image-20220606111209823](Prometheus_.assets/image-20220606111209823.png)
+
+检查配置文件语法
+
+```
+./amtool check-config alertmanager.yml
+```
+
+## 配置邮件告警
+
+首先备份初始的配置文件方便调试
+
+```
+cp alertmanager.yml{,.bak}
+```
+
+自定义配置文件(注意格式的书写不要用tab ，要用空格，yaml文件对语法要求很严格)
+
+```perl
+[root@prous alertmanager-0.23.0]# cat alertmanager.yml
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.163.com:25' 
+  smtp_from: 'yzh2361046420@163.com' 
+  smtp_auth_username: 'yzh2360146420@163.com' 
+  smtp_auth_password: 'NEXWNXCUQCYARCIH' 
+  smtp_require_tls: false
+ 
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'email'
+
+receivers:
+- name: 'email'
+  email_configs:
+  - to: '2361046420@qq.com'
+    send_resolved: true
+
+inhibit_rules:
+   - source_match:
+        severity: 'critical'
+     target_match:
+        severity: 'warning' 
+     equal: ['alertname', 'dev', 'instance'] 
+```
+
+重启配置文件
+
+```
+systemctl status alertmanager.service
+```
+
+修改prometheus.yml的alerting部分
+
+```perl
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+           -- 10.0.0.101:9093   #填写本机ip地址
+           
+       
+rule_files:
+  - rules/*.yml
+```
+
+### 编写告警规则
+
+```
+[root@prous prometheus]# mkdir /module/prometheus/rules
+[root@prous prometheus]# cd /module/prometheus/rules/
+[root@prous rules]# vim host_monitor.yml
+[root@prous rules]# cat host_monitor.yml 
+groups:
+- name: node-up
+  rules:
+   - alert: node-up
+     expr: up == 0
+     for: 15s
+     labels:
+       team: node
+     annotations:
+       summary: "{{$labels.instance}}Instance has been down for more than 15 seconds"
+       
+       
+# alert：告警规则的名称。
+# expr：基于 PromQL 表达式告警触发条件，用于计算是否有时间序列满足该条件。
+# for：评估等待时间，可选参数。用于表示只有当触发条件持续一段时间后才发送告警。在
+等待期间新产生告警的状态为 pending。
+# labels：自定义标签，允许用户指定要附加到告警上的一组附加标签。
+# annotations：用于指定一组附加信息，比如用于描述告警详细信息的文字等，annotations
+的内容在告警产生时会一同作为参数发送到 Alertmanager。
+# summary 描述告警的概要信息，description 用于描述告警的详细信息。
+# 同时 Alertmanager 的 UI 也会根据这两个标签值，显示告警信息。
+```
+
+重启prometheus服务
+
+```
+systemctl restart prometheus.service
+```
+
+登录查看网页up数值此时为1，我们模拟把它down掉看看告警邮件的变化
+
+![image-20220606201835814](Prometheus_.assets/image-20220606201835814.png)
+
+查看网页端告警规则
+
+![image-20220606202104837](Prometheus_.assets/image-20220606202104837.png)
+
+状态说明 Prometheus Alert 告警状态有三种状态：Inactive、Pending、Firing。 
+
+1、Inactive：非活动状态，表示正在监控，但是还未有任何警报触发。
+
+ 2、Pending：表示这个警报必须被触发。由于警报可以被分组、压抑/抑制或静默/静音，所 以等待验证，一旦所有的验证都通过，则将转到 Firing 状态。
+
+ 3、Firing：将警报发送到 AlertManager，它将按照配置将警报的发送给所有接收者。一旦警 报解除，则将状态转到 Inactive，如此循环。
+
+此时停止node_exprot节点测试告警效果，页面出现告警信息
+
+![image-20220606205537506](Prometheus_.assets/image-20220606205537506.png)
+
