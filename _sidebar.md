@@ -35,7 +35,8 @@
     - [可视化界面kubesphere](/云计算/K8S_01/31_Kubernetes可视化界面kubesphere/README.md)
     - [Kubernetes配置默认存储类](/云计算/K8S_01/32_Kubernetes配置默认存储类/README.md)
     - [Kubernetes中的CRI](/云计算/K8S_01/52_Kubernetes中的CRI/README.md)
-    
+  - k8s_new
+    - [常用命令](/云计算/k8s_new/k8s_command.md)
 
 
 - 自动化部署
