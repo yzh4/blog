@@ -66,6 +66,7 @@
   - [Linux 定时任务](/linux_基础/linux定时任务.md)
   - [vim 编辑器](/linux_基础/vim.md)
   - [RAID 技术](/linux_基础/raid.md)
+  - [离线安装yum文件](/linux_基础/yum_离线安装.md)
 
 
 - shell 
