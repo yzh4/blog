@@ -1,4 +1,4 @@
-# 举个例子
+## 离线的安装yum源的方法
 
 **Python离线安装python3，pip3和离线安装、迁移第三方模块**
 
@@ -79,5 +79,88 @@ pip3 install ./*
 ```
 # 批量离线安装requirments.txt中的模块，需要将下载好的模块和requirments.txt都copy到一个目录，然后执行下面的命令
 pip3 install --no-index --find-links=/tmp/packages  -r requirments.txt 
+```
+
+## 制作离线yum源
+
+有网机上操作
+
+```
+#安装需要的包
+yum install yum-utils  createrepo   
+
+			createrepo：生成yum源各软件之间的依赖索引
+			yum-utils：安装后可使用 yumdownloader 命令下载所需软件包
+
+
+```
+
+### 全量本地yum源
+
+```perl
+查看配置好的源id信息
+yum repolist
+
+按照源ID将网络源拉取到本地
+reposync -r base -p /root/ownyum
+
+打包压缩源文件
+tar -zcf ownyum.tar.gz  ownyum/
+
+将原有yum源文件备份
+mkdir /etc/yum.repos.d/backup/
+mv /etc/yum.repos.d/* /etc/yum.repos.d/backup/
+
+创建新yum源
+cat > /etc/yum.repos.d/test.repo << EOF
+[centos-base]
+name=centos-base
+baseurl=file:///root/base
+gpgcheck=0
+enabled=1
+EOF
+
+将本地同步下来的源文件生成缓存数据库文件
+createrepo /root/ownyum/base/
+#执行后会在/root/ownyum/base文件夹中生成一个叫repodata的文件，很重要！它包含各软件包之间的依赖关系、版本信息等。
+
+清空缓存，查看是否可以正常加载源文件
+yum clean all
+yum repolist 
+```
+
+### 特定软件包yum源制作
+
+```
+yum install yum-utils  createrepo
+
+
+mkdir docker
+
+拉取rpm包和依赖环境 ,解决依赖  指定存放目录
+yumdownloader --resolve --destdir=./ docker
+
+生成repodata索引文件(不需要自己解决依赖)
+createrepo docker/
+
+打包压缩
+tar -zcvf docker-yum.tar.gz docker/
+
+#无网络机器操作
+
+备份
+mkdir /etc/yum.repos.d/backup && mv /etc/yum.repos.d/* /etc/yum.repos.d/backup
+
+
+cat <<EOF>> /etc/yum.repos.d/docker.repo
+ [centos-docker]
+ name=dokcer-ce
+ baseurl=file:///root/docker
+ gpgcheck=0
+ enabled=1
+ EOF
+ 
+ 验证
+ yum repolist
 ```
 

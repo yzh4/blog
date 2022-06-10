@@ -112,7 +112,7 @@ create database redis；
 
 use redis
 
-CREATE TABLE `rdb` (
+CREATE TABLE `APPZC` (
 	`database` int DEFAULT NULL,
 	`type` varchar(128) DEFAULT NULL,
 	`key` varchar(256) DEFAULT NULL,
@@ -123,7 +123,9 @@ CREATE TABLE `rdb` (
 	`expiry` varchar(256) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;    
 
- load data infile 'memory.csv' into table redis.rdb CHARACTER SET utf8 FIELDS TERMINATED BY ',';
+ load data infile '0.csv' into table redis.rdb CHARACTER SET utf8 FIELDS TERMINATED BY ',';
+ 
+ load data infile '1.csv' into table redis.rdb CHARACTER SET utf8 FIELDS TERMINATED BY ',';
 ```
 
 可以将一个redis的所有分片放进一个表里，创建多个表
