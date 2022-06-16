@@ -84,7 +84,8 @@
     - [基础脚本](/shell/shelldemo.md)
  
  - python
-   - [基础脚本](/python/Basic_script.md)
+   - [基础](/python/python.md)
+   - [脚本](/python/Basic_script.md)
 
 - web架构服务
 
