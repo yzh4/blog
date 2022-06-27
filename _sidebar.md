@@ -200,18 +200,11 @@
 
   - redis
 
-    - [介绍](/数据库/redis/Redis.md)
-    - [安装](/数据库/redis/Redis安装.md)
-    - [配置文件](/数据库/redis/redis配置文件.md)
-    - [redis 安全管理](/数据库/redis/redis安全管理.md)
-    - [redis 持久化](/数据库/redis/reid数据持久化.md)
-    - [redis 数据类型](/数据库/redis/redis数据类型.md)
-    - [redis 发布订阅](/数据库/redis/生产消费模型.md)
-    - [redis 服务器管理](/数据库/redis/reids服务器管理命令.md)
-    - [redis 主从复制](/数据库/redis/redis_zhucongfuzhi.md)
-    - [redis sentinel高可用集群](/数据库/redis/redis_Sentinel.md)
-    - [redis cluster集群](/数据库/redis/redis_cluster.md)
-    - [redis API](/数据库/redis/redis_Sentinel.md)
+    - [Redis](/数据库/redis/Redis.md)
+    - [Redis常态化命令](/数据库/redis/redis_changyong.md)
+    - [Redis转换工具](/数据库/redis/redis-rdb-tools的安装与使用.md)
+    
+ 
   
   - oracle
     - [安装](/数据库/oracle/oracle_download.md)
