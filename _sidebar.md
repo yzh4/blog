@@ -179,8 +179,6 @@
 
   - mysql
 
-    <!-- - [数据库基础知识](/数据库/mysql/mysql数据库.md) -->
-
     - [mysql 安装](/数据库/mysql/mysql安装.md)
     - [mysql 多实例部署(5.6)](/数据库/mysql/mysql多实例.md)
     - [mysql 5.7部署](/数据库/mysql/mysql5.7_erjinzhibushu.md)
@@ -212,15 +210,8 @@
 - 计算机基础|网络
 
   - [服务器](/计算机基础/服务器基本知识.md)
-  - [TCP/IP协议](/计算机网络/TCPIP.md)
-
-  - 网络基础
-    - [网络知识 1](/计算机网络/计算机网络基础知识2.md)
-    - [网络知识 2](/计算机网络/计算机网络基础知识3.md)
-
-- office
-  - [Word](/office/word.md)
-  - [Excel](/office/word.md)
+  - [网络基础](/计算机网络/计算机网络.md)
+   
 
 
 - 运维面试题
