@@ -1,6 +1,6 @@
 <!-- _coverpage.md -->
 
-![logo](/logo/1.png)
+![logo](/logo/linux.png)
 
 # <strong>Linuxbook</strong> <small></small>
 
