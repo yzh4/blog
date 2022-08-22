@@ -1,6 +1,9 @@
 <!-- docs/_sidebar.md -->
-- 容器
+- docker
+  - [介绍](/云计算/docker/docker.md)
+  - [安装](/云计算/docker/install.md)
 
+- 容器
   - docker
     - [dokcer常用知识](/云计算/容器/docker.md)
     - [docker 介绍](/云计算/容器/docker介绍.md)
@@ -26,8 +29,8 @@
     - [Kubernetes配置管理](/云计算/K8S_01/12_Kubernetes配置管理/README.md)
     - [集群安全机制](/云计算/K8S_01/13_Kubernetes集群安全机制/README.md)
     - [核心技术Ingress](/云计算/K8S_01/14_Kubernetes核心技术Ingress/README.md)
-    - [核心技术Helm](/云计算/K8S_01/15_Kubernetes核心技术Helm/README.md)
-    - [持久化存储](/云计算/K8S_01/16_Kubernetes持久化存储/README.md)
+    - [持久 [核心技术Helm](/云计算/K8S_01/15_Kubernetes核心技术Helm/README.md)
+    -化存储](/云计算/K8S_01/16_Kubernetes持久化存储/README.md)
     - [集群资源监控](/云计算/K8S_01/17_Kubernetes集群资源监控/README.md)
     - [搭建高可用集群](/云计算/K8S_01/18_Kubernetes搭建高可用集群/README.md)
     - [容器交付介绍](/云计算/K8S_01/19_Kubernetes容器交付介绍/README.md)
@@ -39,34 +42,17 @@
     - [常用命令](/云计算/k8s_new/k8s_command.md)
 
 
+
+
+
+
+
 - 自动化部署
   - [Ansible](/zidonghuayunwei/Ansible/ansible_zongjie.md)
   - [jumpServer](/zidonghuayunwei/jumperserver/jumperserver.md)
   - [Cobbler](/zidonghuayunwei/zidongzhuangji/Cobbler.md)
 
 
-- Linux基础 
-  - linux 常用命令
-    - [Linux 系统](/linux_基础/linux_命令.md)
-    - [Linux 文件目录管理](/linux_基础/linux文件目录管理命令.md)
-    - [Linux 文件属性管理](/linux_基础/linux文件属性与管理.md)
-    - [Linux 用户管理](/linux_基础/Linux的用户管理.md)
-    - [Linux 文件权限](/linux_基础/linux文件权限.md)
-    - [Linux 网络管理](/linux_基础/linux网络管理命令.md)
-    - [Linux 软件包管理](/linux_基础/linux软件包管理.md)
-    - [Linux 进程管理](/linux_基础/linux进程管理.md)
-    - linux 磁盘管理
-      - [vmware基于centos磁盘扩容](/linux_基础/cipankuorong.md)
-      - [linux 软硬链接](/linux_基础/linux软硬链接.md)
-      - [linux 文件系统管理](/linux_基础/linux文件系统管理.md)
-      - [linux 文件系统挂载](/linux_基础/文件系统挂载.md)
-      - [lvm 逻辑卷](/linux_基础/lvm逻辑卷.md)
-  - [linux系统安装](/linux_基础/xitonganzhuang.md)
-  - [Linux 系统启动过程](/linux_基础/Linux_系统启动过程.md)
-  - [Linux 定时任务](/linux_基础/linux定时任务.md)
-  - [vim 编辑器](/linux_基础/vim.md)
-  - [RAID 技术](/linux_基础/raid.md)
-  - [离线安装yum文件](/linux_基础/yum_离线安装.md)
 
 
 - shell 
@@ -129,21 +115,12 @@
     - [防火墙命令](/web服务/linux防火墙/防火墙命令.md)
     - [iptables 规则查询](/web服务/linux防火墙/iptables规则查询.md)
     <!-- - [iptables 规则管理](/web服务/linux防火墙/iptables规则管理.md) -->
-    - [iptables 进阶](/web服务/linux防火墙/iptables进阶.md)
+    <!-- - [iptables 进阶](/web服务/linux防火墙/iptables进阶.md) -->
 
-  - 分布式存储
-    - [nfs 文件共享服务](/web服务/nfs/nfs.md)
+ 
 
-  - 文件同步
-
-    - [rsync 用法](/web服务/数据同步/rsync.md)
-    - [inotify 企业级实时复制](/web服务/数据同步/inotify企业级实时复制实践.md)
-    - [sersync 企业级实战](/web服务/数据同步/sersync用法.md)
-  - [dns](/web服务/dns/dns.md)
-  - [ntp](/web服务/ntp/ntpdate.md)
-  - [ssh](/web服务/ssh/ssh.md)
-  - [vsftpd](/web服务/vsftpd/vsftpd.md)
-  - [samba](/web服务/samba/samba.md)
+ 
+  
 
 
 - 日志收集系统
@@ -205,7 +182,9 @@
  
   
   - oracle
-    - [安装](/数据库/oracle/oracle_download.md)
+    <!-- - [安装](/数据库/oracle/oracle_download.md) -->
+    - [linux安装](/数据库/oracle/oralce19c.md)
+
 
 - 计算机基础|网络
 
@@ -219,3 +198,45 @@
 
 - RHCE8
   - [练习题](/RHCE8/练习.md)
+
+
+
+- Linux基础 
+  - linux 常用命令
+    - [Linux 系统](/linux_基础/linux_命令.md)
+    - [Linux 文件目录管理](/linux_基础/linux文件目录管理命令.md)
+    - [Linux 文件属性管理](/linux_基础/linux文件属性与管理.md)
+    - [Linux 用户管理](/linux_基础/Linux的用户管理.md)
+    - [Linux 文件权限](/linux_基础/linux文件权限.md)
+    - [Linux 网络管理](/linux_基础/linux网络管理命令.md)
+    - [Linux 软件包管理](/linux_基础/linux软件包管理.md)
+    - [Linux 进程管理](/linux_基础/linux进程管理.md)
+    - linux 磁盘管理
+      - [vmware基于centos磁盘扩容](/linux_基础/cipankuorong.md)
+      - [linux 软硬链接](/linux_基础/linux软硬链接.md)
+      - [linux 文件系统管理](/linux_基础/linux文件系统管理.md)
+      - [linux 文件系统挂载](/linux_基础/文件系统挂载.md)
+      - [lvm 逻辑卷](/linux_基础/lvm逻辑卷.md)
+  - [linux系统安装](/linux_基础/xitonganzhuang.md)
+  - [Linux 系统启动过程](/linux_基础/Linux_系统启动过程.md)
+  - [Linux 定时任务](/linux_基础/linux定时任务.md)
+  - [vim 编辑器](/linux_基础/vim.md)
+  - [RAID 技术](/linux_基础/raid.md)
+  - [离线安装yum文件](/linux_基础/yum_离线安装.md)
+
+
+
+
+ - 分布式存储
+    - [nfs 文件共享服务](/web服务/nfs/nfs.md)
+
+ - 文件同步
+    - [rsync 用法](/web服务/数据同步/rsync.md)
+    - [inotify 企业级实时复制](/web服务/数据同步/inotify企业级实时复制实践.md)
+    - [sersync 企业级实战](/web服务/数据同步/sersync用法.md)
+
+- [dns](/web服务/dns/dns.md)
+- [ntp](/web服务/ntp/ntpdate.md)
+- [ssh](/web服务/ssh/ssh.md)
+- [vsftpd](/web服务/vsftpd/vsftpd.md)
+- [samba](/web服务/samba/samba.md)
