@@ -3,45 +3,11 @@
   - [介绍](/云计算/docker/docker.md)
   - [安装](/云计算/docker/install.md)
 
-- 容器
-  - docker
-    - [dokcer常用知识](/云计算/容器/docker.md)
-    - [docker 介绍](/云计算/容器/docker介绍.md)
-    - [docker 安装与生命周期](/云计算/容器/docker安装与生命周期.md)
-    - [docker 镜像](/云计算/容器/docker镜像.md)
-    - [docker 容器管理](/云计算/容器/docker容器管理.md)
-    - [dockerfile](/云计算/容器/dockerfile.md)
-    - [docker 仓库](/云计算/容器/docker仓库.md)
-    - [Docker 存储](/云计算/容器/Docker存储&网络&API.md)
-    - [Docker 网络](/云计算/容器/docker网络.md)
-    - [docker api](/云计算/容器/docker_api.md)
-    - [docker 容器编排](/云计算/容器/docker容器编排.md)
-    - [容器化运行django](/云计算/容器/docker_django.md)
-    - [遇见 bug](/云计算/容器/一些问题.md)
-  - k8s基础
-    - [k8s介绍与搭建](/云计算/K8S_01/1_k8s介绍与搭建/README.md)
-    - [集群管理工具](/云计算/K8S_01/6_Kubernetes集群管理工具kubectl/README.md)
-    - [集群yaml文件详解](/云计算/K8S_01/7_Kubernetes集群YAML文件详解/README.md)
-    - [核心技术Pod](/云计算/K8S_01/8_Kubernetes核心技术Pod/README.md)
-    - [核心技术Controller](/云计算/K8S_01/9_Kubernetes核心技术Controller/README.md)
-    - [核心技术Service](/云计算/K8S_01/10_Kubernetes核心技术Service/README.md)
-    - [控制器Controller](/云计算/K8S_01/11_Kubernetes控制器Controller详解/README.md)
-    - [Kubernetes配置管理](/云计算/K8S_01/12_Kubernetes配置管理/README.md)
-    - [集群安全机制](/云计算/K8S_01/13_Kubernetes集群安全机制/README.md)
-    - [核心技术Ingress](/云计算/K8S_01/14_Kubernetes核心技术Ingress/README.md)
-    - [持久 [核心技术Helm](/云计算/K8S_01/15_Kubernetes核心技术Helm/README.md)
-    -化存储](/云计算/K8S_01/16_Kubernetes持久化存储/README.md)
-    - [集群资源监控](/云计算/K8S_01/17_Kubernetes集群资源监控/README.md)
-    - [搭建高可用集群](/云计算/K8S_01/18_Kubernetes搭建高可用集群/README.md)
-    - [容器交付介绍](/云计算/K8S_01/19_Kubernetes容器交付介绍/README.md)
-    - [kubeadm-ha脚本一键安装K8S](/云计算/K8S_01/30_使用kubeadm-ha脚本一键安装K8S/README.md)
-    - [可视化界面kubesphere](/云计算/K8S_01/31_Kubernetes可视化界面kubesphere/README.md)
-    - [Kubernetes配置默认存储类](/云计算/K8S_01/32_Kubernetes配置默认存储类/README.md)
-    - [Kubernetes中的CRI](/云计算/K8S_01/52_Kubernetes中的CRI/README.md)
-  - k8s_new
-    - [常用命令](/云计算/k8s_new/k8s_command.md)
 
-
+  
+  - k8s
+    - [认识k8s](/云计算/k8s/基础/认识k8s.md)
+    - [部署k8s](/云计算/k8s/基础/部署k8s.md)
 
 
 
