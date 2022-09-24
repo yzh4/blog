@@ -2,12 +2,16 @@
 - docker
   - [介绍](/云计算/docker/docker.md)
   - [安装](/云计算/docker/install.md)
+  - [docker笔记](/云计算/docker/docker笔记.md)
 
 
   
   - k8s
     - [认识k8s](/云计算/k8s/基础/认识k8s.md)
-    - [部署k8s](/云计算/k8s/基础/部署k8s.md)
+    - 部署k8s
+      - [非高可用](/云计算/k8s/基础/部署k8s.md)
+      - [高可用](/云计算/k8s/基础/部署高可用k8s.md)
+    - [工作流程](/云计算/k8s/基础/k8s工作流程.md)
 
 
 

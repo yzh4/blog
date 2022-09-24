@@ -933,3 +933,63 @@ source /usr/share/bash-completion/bash_completion
 source <(kubectl completion bash)
 echo "source <(kubectl completion bash)" >> ~/.bashrc
 ```
+
+### 证书过期调整
+
+使用kubeadm安装的集群，证书默认有效期为1年，可以通过如下方式修改为10年。
+
+```bash
+$ cd /etc/kubernetes/pki
+
+# 查看当前证书有效期
+$ for i in $(ls *.crt); do echo "===== $i ====="; openssl x509 -in $i -text -noout | grep -A 3 'Validity' ; done
+
+$ mkdir backup_key; cp -rp ./* backup_key/
+$ git clone https://github.com/yuyicai/update-kube-cert.git
+$ cd update-kube-cert/ 
+$ bash update-kubeadm-cert.sh all
+
+# 重建管理服务
+$ kubectl -n kube-system delete po kube-apiserver-k8s-master kube-controller-manager-k8s-master kube-scheduler-k8s-master
+```
+
+### 验证集群
+
+操作节点： 在master节点（`k8s-master`）执行
+
+```python
+$ kubectl get nodes  #观察集群节点是否全部Ready
+```
+
+创建测试nginx服务
+
+```python
+$ kubectl run  test-nginx --image=nginx:alpine
+```
+
+查看pod是否创建成功，并访问pod ip测试是否可用
+
+```bash
+$ kubectl get po -o wide
+```
+
+### 清理集群
+
+如果你的集群安装过程中遇到了其他问题，我们可以使用下面的命令来进行重置：
+
+```bash
+# 在全部集群节点执行
+kubeadm reset
+ifconfig cni0 down && ip link delete cni0
+ifconfig flannel.1 down && ip link delete flannel.1
+rm -rf /run/flannel/subnet.env
+rm -rf /var/lib/cni/
+mv /etc/kubernetes/ /tmp
+mv /var/lib/etcd /tmp
+mv ~/.kube /tmp
+iptables -F
+iptables -t nat -F
+ipvsadm -C
+ip link del kube-ipvs0
+ip link del dummy0
+```
