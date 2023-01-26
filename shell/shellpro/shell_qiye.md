@@ -594,3 +594,62 @@ done
 
 ```
 
+## 定时压缩日志教本
+
+```shell
+#!/bin/bash
+
+#日志压缩
+log_dir=logs
+[[ -d "log_dir" ]] || mkdir $log_dir
+cd $log_dir
+
+log_out(){
+	log_path="access.log"
+	echo $1 >> $log_path
+}
+
+log_file(){
+	while ls > /dev/null
+	do
+		let "host_count=$RANDOM % 7 + 2"
+		declare -a host_arr
+		now_time=$(date  "+%H%M%S")
+		for i in `seq 0 $host_count`
+		do
+			host_arr[$i]="10.83.26.`expr $i + 10`"
+		done
+		
+		#生成日志文件
+		for host in "${host_arr[@]}"
+		do 
+			log_out "生成日志文件:${host}_${now_time}.access.log"
+			touch ${host}_${now_time}.log
+		done
+		sleep 10
+	done
+}
+
+#压缩日志文件
+compress_log_files(){
+	while ls > /dev/null
+	do
+		sleep 1
+		yasuo=$(find . -name "*.log" -exec basename {} \;|awk -F_ '{print $2}'|awk -F. '{print $1}'|sort -r|uniq|awk 'NR==1{print}')
+		if [ -z "$yasuo" ];then
+			log_out "当前没有日志文件要压缩"
+			continue
+		fi
+		log_out "压缩${yasuo}文件..."
+		find . -name "*${yasuo}.log"|xargs tar -czPf log_yzsuo_${yasuo}.tar.gz
+		if [ $? -eq 0 ]&&[ -e log_yzsuo_${yasuo}.tar.gz ];then
+			find . -name "*${yasuo}.log" -exec rm -f {} \;
+		fi
+	done
+}
+
+log_file &
+compress_log_files &
+
+```
+
